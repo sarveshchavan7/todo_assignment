@@ -32,21 +32,21 @@ class _CategoryChooserState extends State<CategoryChooser> {
           },
         ),
         IconButton(
-          color: selectedColor(Category.personal),
-          icon: Icon(Icons.person),
-          onPressed: () {
-            setState(() {
-              category = Category.personal;
-            });
-            widget.callBackCategory(category);
-          },
-        ),
-        IconButton(
           color: selectedColor(Category.social),
           icon: Icon(Icons.people),
           onPressed: () {
             setState(() {
               category = Category.social;
+            });
+            widget.callBackCategory(category);
+          },
+        ),
+        IconButton(
+          color: selectedColor(Category.personal),
+          icon: Icon(Icons.person),
+          onPressed: () {
+            setState(() {
+              category = Category.personal;
             });
             widget.callBackCategory(category);
           },

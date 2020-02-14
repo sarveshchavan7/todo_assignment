@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class DatePickerMixin {
+class DatePicker {
   Future<String> selectDate(BuildContext context, DateTime selectedDate) async {
     final DateTime picked = await showDatePicker(
         context: context,

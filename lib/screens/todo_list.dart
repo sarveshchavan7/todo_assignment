@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:todo_assignment/screens/edit_add_todo.dart';
-import 'package:todo_assignment/utils/date_picker_mixin.dart';
+import 'package:todo_assignment/utils/date_picker.dart';
 
 class TodoList extends StatefulWidget {
   @override
   _TodoListState createState() => _TodoListState();
 }
 
-class _TodoListState extends State<TodoList> with DatePickerMixin {
+class _TodoListState extends State<TodoList> with DatePicker {
   DateTime selectedDate = DateTime.now();
 
   @override

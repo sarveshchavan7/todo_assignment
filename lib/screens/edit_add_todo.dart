@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:todo_assignment/models/todo_model.dart';
 import 'package:todo_assignment/sample_keys.dart';
-import 'package:todo_assignment/utils/date_picker_mixin.dart';
+import 'package:todo_assignment/utils/date_picker.dart';
 import 'package:todo_assignment/widgets/category_choose.dart';
 
 typedef CallBackCategory(Category category);
@@ -15,14 +16,10 @@ class EditAddTodo extends StatefulWidget {
   _EditAddTodoState createState() => _EditAddTodoState();
 }
 
-class _EditAddTodoState extends State<EditAddTodo> with DatePickerMixin {
+class _EditAddTodoState extends State<EditAddTodo> with DatePicker {
+  static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   TodoModel _todoModel;
-  String _titleText;
-  String _subTitleText;
-  String _endDate;
-  bool _urgent;
-  bool _important;
-  Category _category;
 
   @override
   void initState() {
@@ -33,6 +30,7 @@ class _EditAddTodoState extends State<EditAddTodo> with DatePickerMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: _saveFab(),
       appBar: AppBar(
         title: Text(
           isEditAble ? 'Edit' : 'Add',
@@ -40,20 +38,28 @@ class _EditAddTodoState extends State<EditAddTodo> with DatePickerMixin {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: Column(
-          children: <Widget>[
-            CategoryChooser(callBackCategory: selectedCategory),
-            _title(),
-            SizedBox(
-              height: 10,
+          padding: const EdgeInsets.all(15.0),
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              children: <Widget>[
+                CategoryChooser(callBackCategory: selectedCategory),
+                _title(),
+                SizedBox(
+                  height: 10,
+                ),
+                _subTitle(),
+                SizedBox(
+                  height: 10,
+                ),
+                _date(context),
+                SizedBox(
+                  height: 10,
+                ),
+                _urgentImportant(),
+              ],
             ),
-            _subTitle(),
-            _date(context),
-            _urgentImportant(),
-          ],
-        ),
-      ),
+          )),
     );
   }
 
@@ -65,24 +71,24 @@ class _EditAddTodoState extends State<EditAddTodo> with DatePickerMixin {
   Widget _title() {
     return TextFormField(
       key: SampleKeys.titleFiled,
+      validator: (val) => val.trim().isEmpty ? 'Please  titile' : null,
+      initialValue: isEditAble ? _todoModel.title : '',
       decoration: InputDecoration(
         hintText: 'Title',
       ),
-      onSaved: (titleText) {
-        _titleText = titleText;
-      },
+      onSaved: (titleText) => _todoModel.title = titleText,
     );
   }
 
   _subTitle() {
     return TextFormField(
+      validator: (val) => val.trim().isEmpty ? 'Please sub titile' : null,
       key: SampleKeys.subtitleFiled,
+      initialValue: isEditAble ? _todoModel.subTitle : '',
       decoration: InputDecoration(
         hintText: 'Sub title',
       ),
-      onSaved: (subTitleText) {
-        _subTitleText = subTitleText;
-      },
+      onSaved: (subTitleText) => _todoModel.subTitle = subTitleText,
     );
   }
 
@@ -112,7 +118,56 @@ class _EditAddTodoState extends State<EditAddTodo> with DatePickerMixin {
   }
 
   _urgentImportant() {
-    return Row();
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: <Widget>[
+        Text('Urgent'),
+        Checkbox(
+          value: _todoModel.urgent == 1,
+          onChanged: (bool value) {
+            _todoModel.urgent = value ? 1 : 0;
+            setState(() {});
+          },
+        ),
+        Text('Important'),
+        Checkbox(
+          value: _todoModel.important == 1,
+          onChanged: (bool value) {
+            _todoModel.important = value ? 1 : 0;
+            setState(() {});
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _saveFab() {
+    return FloatingActionButton(
+      child: const Icon(Icons.check),
+      onPressed: () {
+        if (areAllFieldEmpty()) {
+          _formKey.currentState.save();
+          TodoModel todoModel = TodoModel.copyFrom(_todoModel);
+          todoModel.toString();
+        }
+      },
+    );
+  }
+
+  bool areAllFieldEmpty() {
+    // Validate input text fields,date and category
+    bool areTextFiedlValid = _formKey.currentState.validate();
+
+    if (_todoModel.endDate == null) {
+      Fluttertoast.showToast(msg: "Please Select Date");
+      return false;
+    }
+
+    if (_todoModel.category == null) {
+      Fluttertoast.showToast(msg: "Please Select Category");
+      return false;
+    }
+    return areTextFiedlValid;
   }
 
   bool get isEditAble => widget.todoModel != null;

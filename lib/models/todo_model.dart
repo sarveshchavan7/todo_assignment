@@ -76,4 +76,21 @@ class TodoModel {
         return Category.work;
     }
   }
+
+  factory TodoModel.copyFrom(TodoModel todoModel) {
+    return TodoModel(
+      category: todoModel.category,
+      title: todoModel.title,
+      subTitle: todoModel.subTitle,
+      urgent: todoModel.urgent ?? 0,
+      important: todoModel.important ?? 0,
+      endDate: todoModel.endDate,
+    );
+  }
+
+  @override
+  String toString() {
+    print('$title $subTitle $endDate $urgent $important ${getCategoryInt(category)}');
+    return super.toString();
+  }
 }
