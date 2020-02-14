@@ -3,25 +3,25 @@ import 'package:todo_assignment/repository/repository.dart';
 
 class MoorDbProvider implements Repository<TodoModel> {
   @override
-  Future<void> add(TodoModel data) {
+  Future<int> add(TodoModel data) {
     // TODO: implement add
     return null;
   }
 
   @override
-  Future<void> delete(TodoModel data) {
+  Future<int> delete(TodoModel data) {
     // TODO: implement delete
     return null;
   }
 
   @override
-  Future<void> update(TodoModel data) {
+  Future<int> update(TodoModel data) {
     // TODO: implement update
     return null;
   }
 
   @override
-  Future<List<TodoModel>> viewAll() {
+  Future<List<TodoModel>> view(Map filter) {
     // TODO: implement viewAll
     return null;
   }

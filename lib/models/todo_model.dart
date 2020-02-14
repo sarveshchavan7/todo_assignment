@@ -26,7 +26,7 @@ class TodoModel {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
-      'category': category,
+      'category': getCategoryInt(category),
       'title': title,
       'sub_title': subTitle,
       'end_date': endDate,
@@ -35,14 +35,15 @@ class TodoModel {
     };
   }
 
-  TodoModel.fromDb(Map<String, dynamic> map)
-      : id = map['id'],
-        category = map['category'],
-        title = map['title'],
-        subTitle = map['sub_title'],
-        endDate = map['end_date'],
-        urgent = map['urgent'],
-        important = map['important'];
+  TodoModel.fromDb(Map<String, dynamic> map) {
+    id = map['id'];
+    category = this.getCategoryEnum(map['category']);
+    title = map['title'];
+    subTitle = map['sub_title'];
+    endDate = map['end_date'];
+    urgent = map['urgent'];
+    important = map['important'];
+  }
 
   int getCategoryInt(Category category) {
     switch (category) {
@@ -90,7 +91,8 @@ class TodoModel {
 
   @override
   String toString() {
-    print('$title $subTitle $endDate $urgent $important ${getCategoryInt(category)}');
+    print(
+        '$title $subTitle $endDate $urgent $important ${getCategoryInt(category)}');
     return super.toString();
   }
 }

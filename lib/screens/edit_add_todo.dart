@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:todo_assignment/bloc/todo_bloc_provider.dart';
 import 'package:todo_assignment/models/todo_model.dart';
 import 'package:todo_assignment/sample_keys.dart';
 import 'package:todo_assignment/utils/date_picker.dart';
@@ -20,6 +21,7 @@ class _EditAddTodoState extends State<EditAddTodo> with DatePicker {
   static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   TodoModel _todoModel;
+  TodoBloc todoBloc;
 
   @override
   void initState() {
@@ -29,6 +31,7 @@ class _EditAddTodoState extends State<EditAddTodo> with DatePicker {
 
   @override
   Widget build(BuildContext context) {
+    todoBloc = TodoBlocProvider.of(context);
     return Scaffold(
       floatingActionButton: _saveFab(),
       appBar: AppBar(
@@ -148,7 +151,8 @@ class _EditAddTodoState extends State<EditAddTodo> with DatePicker {
         if (areAllFieldEmpty()) {
           _formKey.currentState.save();
           TodoModel todoModel = TodoModel.copyFrom(_todoModel);
-          todoModel.toString();
+          todoBloc.addTodo(todoModel);
+          Navigator.pop(context);
         }
       },
     );
