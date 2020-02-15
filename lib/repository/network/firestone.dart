@@ -9,7 +9,7 @@ class FireStoneStorage extends Repository<TodoModel> {
   }
 
   @override
-  Future<int> delete(TodoModel data) {
+  Future<int> delete(int data) {
     // TODO: implement delete
     return null;
   }
@@ -21,7 +21,7 @@ class FireStoneStorage extends Repository<TodoModel> {
   }
 
   @override
-  Future<List<TodoModel>> view(Map filter) {
+  Future<List<TodoModel>> view({Map filter}) {
     // TODO: implement viewAll
     return null;
   }

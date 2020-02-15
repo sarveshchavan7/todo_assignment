@@ -46,10 +46,10 @@ class SqlDbProvider implements Repository<TodoModel> {
   }
 
   @override
-  Future<int> delete(TodoModel data) async {
+  Future<int> delete(int id) async {
     try {
-      int result = await _db
-          .rawDelete("DELETE FROM $_tableName WHERE id = ?", [data.id]);
+      int result =
+          await _db.rawDelete("DELETE FROM $_tableName WHERE id = ?", [id]);
       return result;
     } catch (e) {
       throw e;
@@ -68,29 +68,32 @@ class SqlDbProvider implements Repository<TodoModel> {
   }
 
   @override
-  Future<List<TodoModel>> view(Map filter) async {
+  Future<List<TodoModel>> view({Map filter}) async {
+    filter ??= {};
     List args = [];
     String sql = """SELECT * FROM $_tableName """;
-    // Where clause
-    if (filter != null && filter.isNotEmpty) {
-      String where = "WHERE";
-      // Complete
-      if (filter.containsKey("is_complete")) {
-        where += " compeleted = ? ";
-        args.add(filter["is_complete"]);
-      }
-      // End date filter
-      if (filter.containsKey("end_date")) {
-        if (where != "WHERE") where += "AND";
-        where += " end_date = ? ";
-        args.add(filter["end_date"]);
-      }
-      // Category filter
-      if (filter.containsKey("category")) {
-        if (where != "WHERE") where += "AND";
-        where += " category = ? ";
-        args.add(filter["category"]);
-      }
+
+    String where = "WHERE";
+    // Complete
+    if (filter.containsKey("is_complete")) {
+      where += " compeleted = ? ";
+      args.add(filter["is_complete"]);
+    } else {
+      where += " compeleted IS NULL ";
+    }
+    // End date filter
+    if (filter.containsKey("end_date")) {
+      if (where != "WHERE") where += "AND";
+      where += " end_date = ? ";
+      args.add(filter["end_date"]);
+    }
+    // Category filter
+    if (filter.containsKey("category")) {
+      if (where != "WHERE") where += "AND";
+      where += " category = ? ";
+      args.add(filter["category"]);
+    }
+    if (where != "WHERE") {
       sql += where;
     }
     // Order by urgent

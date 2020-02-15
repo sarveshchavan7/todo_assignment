@@ -9,7 +9,7 @@ class TodoBloc {
   final Repository repository;
 
   final _getTodoListController = BehaviorSubject<List<TodoModel>>();
-  final _filterTodoController = BehaviorSubject<Map>();
+  final _filterTodoController = BehaviorSubject<Map>.seeded({});
 
   // Input
   Sink<Map> get applyFilter => _filterTodoController.sink;
@@ -17,6 +17,7 @@ class TodoBloc {
   // Output
   Stream get filterStream => _filterTodoController.stream;
   Stream get getTodoListStream => _getTodoListController.stream;
+  Map get getFilterValues => _filterTodoController.value;
 
   // Cleanup
   List<StreamSubscription<dynamic>> _subscriptions;
@@ -32,7 +33,7 @@ class TodoBloc {
     try {
       int resultCode = await repository.add(todoModel);
       if (resultCode != -1) {
-        viewTodo();
+        viewTodo(filter: getFilterValues);
       } else {
         //TODO: toast message
       }
@@ -41,10 +42,10 @@ class TodoBloc {
     }
   }
 
-  deleteTodo(String id) async {
+  deleteTodo(int id) async {
     int resultCode = await repository.delete(id);
     if (resultCode == 1) {
-      viewTodo();
+      //viewTodo();
     } else {
       //TODO: toast message
     }
@@ -53,23 +54,19 @@ class TodoBloc {
   updateTodo(TodoModel todoModel) async {
     int resultCode = await repository.update(todoModel);
     if (resultCode == 1) {
-      viewTodo();
+      viewTodo(filter: getFilterValues);
     } else {
       //TODO: toast message
     }
   }
 
   viewTodo({Map filter}) async {
-    List<TodoModel> todoList = await repository.view(filter);
+    List<TodoModel> todoList = await repository.view(filter: filter);
     _getTodoListController.sink.add(todoList);
   }
 
-  void onFilterApplied(Map filter) {
-    viewTodo(filter: filter);
-  }
-
-  Stream<List<TodoModel>> get todos {
-    return Stream.fromFuture(repository.view({}));
+  void onFilterApplied(Map value) {
+    viewTodo(filter: value);
   }
 
   close() {

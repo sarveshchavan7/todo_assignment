@@ -5,8 +5,10 @@ import 'package:meta/meta.dart';
 
 class CategoryChooser extends StatefulWidget {
   final CallBackCategory callBackCategory;
+  final Category currentCategory;
 
-  const CategoryChooser({Key key, @required this.callBackCategory})
+  const CategoryChooser(
+      {Key key, @required this.callBackCategory, this.currentCategory})
       : super(key: key);
 
   @override
@@ -15,6 +17,14 @@ class CategoryChooser extends StatefulWidget {
 
 class _CategoryChooserState extends State<CategoryChooser> {
   Category category;
+
+  bool get isCategorySelected => widget.currentCategory != null;
+
+  @override
+  void initState() {
+    category = isCategorySelected ? widget.currentCategory : null;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

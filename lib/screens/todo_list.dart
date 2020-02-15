@@ -3,6 +3,7 @@ import 'package:todo_assignment/bloc/todo_bloc_provider.dart';
 import 'package:todo_assignment/models/todo_model.dart';
 import 'package:todo_assignment/screens/edit_add_todo.dart';
 import 'package:todo_assignment/utils/date_picker.dart';
+import 'package:todo_assignment/widgets/filter.dart';
 import 'package:uuid/uuid.dart';
 
 class TodoList extends StatefulWidget {
@@ -11,7 +12,6 @@ class TodoList extends StatefulWidget {
 }
 
 class _TodoListState extends State<TodoList> with DatePicker {
-  DateTime selectedDate = DateTime.now();
   TodoBloc todoBloc;
   var uuid = new Uuid();
 
@@ -28,33 +28,9 @@ class _TodoListState extends State<TodoList> with DatePicker {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
         shape: CircularNotchedRectangle(),
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            _datePicker(context),
-            _categoryChooser(),
-          ],
-        ),
+        child: _actions(),
       ),
       body: _todoList(),
-    );
-  }
-
-  Widget _datePicker(BuildContext context) {
-    return IconButton(
-      icon: Icon(Icons.date_range),
-      onPressed: () async {
-        selectedDate =
-            await selectDate(context, selectedDate) ?? DateTime.now();
-      },
-    );
-  }
-
-  Widget _categoryChooser() {
-    return IconButton(
-      icon: Icon(Icons.category),
-      onPressed: () {},
     );
   }
 
@@ -69,14 +45,21 @@ class _TodoListState extends State<TodoList> with DatePicker {
             return Card(
               child: Dismissible(
                 onDismissed: (direction) {
-                  TodoModel todoModel = snapshot.data[index]..compeleted = 1;
-                  todoBloc.updateTodo(todoModel);
+                  if (DismissDirection.endToStart == direction) {
+                    // Left
+                    TodoModel todoModel = snapshot.data[index];
+                    todoBloc.deleteTodo(todoModel.id);
+                  } else {
+                    // Right
+                    TodoModel todoModel = snapshot.data[index]..compeleted = 1;
+                    todoBloc.updateTodo(todoModel);
+                  }
                 },
                 key: Key(uuid.v1()),
                 child: ListTile(
                   title: Text(snapshot.data[index].title),
                   subtitle: Text(
-                      '${snapshot.data[index].subTitle}  ${snapshot.data[index].endDate}'),
+                      "${snapshot.data[index].subTitle}  ${snapshot.data[index].endDate}"),
                   leading: getIconAsPerCategory(snapshot.data[index].category),
                 ),
               ),
@@ -114,5 +97,40 @@ class _TodoListState extends State<TodoList> with DatePicker {
         return Icon(Icons.work);
         break;
     }
+  }
+
+  Widget _actions() {
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: <Widget>[
+        _filterBottomSheet(),
+        _compeletedTodoList(),
+      ],
+    );
+  }
+
+  Widget _filterBottomSheet() {
+    return IconButton(
+      icon: Icon(Icons.filter_list),
+      onPressed: _showFilterModalSheet,
+    );
+  }
+
+  Widget _compeletedTodoList() {
+    return IconButton(
+      icon: Icon(Icons.done),
+      onPressed: () {},
+    );
+  }
+
+  void _showFilterModalSheet() {
+    showModalBottomSheet(
+        context: context,
+        builder: (builder) {
+          return FilterWidget(
+            todoBloc: todoBloc,
+          );
+        });
   }
 }

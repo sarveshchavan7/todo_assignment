@@ -9,7 +9,7 @@ class MoorDbProvider implements Repository<TodoModel> {
   }
 
   @override
-  Future<int> delete(TodoModel data) {
+  Future<int> delete(int id) {
     // TODO: implement delete
     return null;
   }
@@ -21,7 +21,7 @@ class MoorDbProvider implements Repository<TodoModel> {
   }
 
   @override
-  Future<List<TodoModel>> view(Map filter) {
+  Future<List<TodoModel>> view({Map filter}) {
     // TODO: implement viewAll
     return null;
   }

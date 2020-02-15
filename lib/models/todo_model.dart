@@ -61,7 +61,7 @@ class TodoModel {
         return 3;
         break;
       default:
-        return 1;
+        return null;
         break;
     }
   }
@@ -78,7 +78,7 @@ class TodoModel {
         return Category.personal;
         break;
       default:
-        return Category.work;
+        return null;
     }
   }
 
