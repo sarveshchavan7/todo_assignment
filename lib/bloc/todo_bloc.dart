@@ -22,6 +22,7 @@ class TodoBloc {
   List<StreamSubscription<dynamic>> _subscriptions;
 
   TodoBloc({@required this.repository}) {
+    viewTodo();
     _subscriptions = [
       _filterTodoController.listen(onFilterApplied),
     ];

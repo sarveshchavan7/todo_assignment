@@ -61,7 +61,7 @@ class _TodoListState extends State<TodoList> with DatePicker {
   Widget _todoList() {
     return StreamBuilder<List<TodoModel>>(
       initialData: <TodoModel>[],
-      stream: todoBloc.todos,
+      stream: todoBloc.getTodoListStream,
       builder: (BuildContext context, AsyncSnapshot<List<TodoModel>> snapshot) {
         return ListView.builder(
           itemCount: snapshot.data.length,

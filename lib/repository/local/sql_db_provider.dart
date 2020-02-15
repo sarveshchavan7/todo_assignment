@@ -71,20 +71,27 @@ class SqlDbProvider implements Repository<TodoModel> {
   Future<List<TodoModel>> view(Map filter) async {
     List args = [];
     String sql = """SELECT * FROM $_tableName """;
-    // Is compeleted
-    if (filter.containsKey('is_compeleted')) {
-      sql += "WHERE compeleted IS NULL";
-      args.add(filter['is_compeleted']);
-    }
-    // End Date filter
-    if (filter.containsKey('end_date')) {
-      sql += "WHERE end_date = ?";
-      args.add(filter['end_date']);
-    }
-    // Category filyer
-    if (filter.containsKey('category')) {
-      sql += "WHERE category = ?";
-      args.add(filter['category']);
+    // Where clause
+    if (filter != null && filter.isNotEmpty) {
+      String where = "WHERE";
+      // Complete
+      if (filter.containsKey("is_complete")) {
+        where += " compeleted = ? ";
+        args.add(filter["is_complete"]);
+      }
+      // End date filter
+      if (filter.containsKey("end_date")) {
+        if (where != "WHERE") where += "AND";
+        where += " end_date = ? ";
+        args.add(filter["end_date"]);
+      }
+      // Category filter
+      if (filter.containsKey("category")) {
+        if (where != "WHERE") where += "AND";
+        where += " category = ? ";
+        args.add(filter["category"]);
+      }
+      sql += where;
     }
     // Order by urgent
     sql += "ORDER BY urgent DESC";
