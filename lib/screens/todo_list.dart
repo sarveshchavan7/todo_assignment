@@ -68,7 +68,10 @@ class _TodoListState extends State<TodoList> with DatePicker {
           itemBuilder: (BuildContext context, int index) {
             return Card(
               child: Dismissible(
-                onDismissed: (direction) {},
+                onDismissed: (direction) {
+                  TodoModel todoModel = snapshot.data[index]..compeleted = 1;
+                  todoBloc.updateTodo(todoModel);
+                },
                 key: Key(uuid.v1()),
                 child: ListTile(
                   title: Text(snapshot.data[index].title),

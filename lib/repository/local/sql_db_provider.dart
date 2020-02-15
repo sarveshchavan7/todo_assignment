@@ -18,13 +18,14 @@ class SqlDbProvider implements Repository<TodoModel> {
         newDb.execute("""
             CREATE TABLE $_tableName  
             (
-              id INTEGER PRIMARY KEY,
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
               category INTEGER,
               title TEXT,
               sub_title TEXT,
               end_date TEXT,
               urgent INTEGER,
-              important INTEGER
+              important INTEGER,
+              compeleted INTEGER NULLABLE
             )
           """);
       });
@@ -45,20 +46,49 @@ class SqlDbProvider implements Repository<TodoModel> {
   }
 
   @override
-  Future<int> delete(TodoModel data) {
-    return null;
+  Future<int> delete(TodoModel data) async {
+    try {
+      int result = await _db
+          .rawDelete("DELETE FROM $_tableName WHERE id = ?", [data.id]);
+      return result;
+    } catch (e) {
+      throw e;
+    }
   }
 
   @override
-  Future<int> update(TodoModel data) {
-    return null;
+  Future<int> update(TodoModel data) async {
+    try {
+      int result = await _db.update(_tableName, data.toMap(),
+          conflictAlgorithm: ConflictAlgorithm.ignore);
+      return result;
+    } catch (e) {
+      throw e;
+    }
   }
 
   @override
   Future<List<TodoModel>> view(Map filter) async {
-    List<Map<String, dynamic>> todos =
-        await _db.rawQuery("""SELECT * FROM $_tableName 
-        ORDER BY urgent DESC""");
+    List args = [];
+    String sql = """SELECT * FROM $_tableName """;
+    // Is compeleted
+    if (filter.containsKey('is_compeleted')) {
+      sql += "WHERE compeleted IS NULL";
+      args.add(filter['is_compeleted']);
+    }
+    // End Date filter
+    if (filter.containsKey('end_date')) {
+      sql += "WHERE end_date = ?";
+      args.add(filter['end_date']);
+    }
+    // Category filyer
+    if (filter.containsKey('category')) {
+      sql += "WHERE category = ?";
+      args.add(filter['category']);
+    }
+    // Order by urgent
+    sql += "ORDER BY urgent DESC";
+    List<Map<String, dynamic>> todos = await _db.rawQuery(sql, args);
     return todos.map((map) {
       return TodoModel.fromDb(map);
     }).toList();

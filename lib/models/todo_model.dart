@@ -10,8 +10,7 @@ class TodoModel {
   String endDate;
   int urgent;
   int important;
-
-  TodoModel.add();
+  int compeleted;
 
   TodoModel({
     this.id,
@@ -21,7 +20,10 @@ class TodoModel {
     @required this.endDate,
     @required this.urgent,
     @required this.important,
+    this.compeleted,
   });
+
+  TodoModel.add();
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -31,7 +33,8 @@ class TodoModel {
       'sub_title': subTitle,
       'end_date': endDate,
       'urgent': urgent,
-      'important': important
+      'important': important,
+      'compeleted': compeleted,
     };
   }
 
@@ -43,6 +46,7 @@ class TodoModel {
     endDate = map['end_date'];
     urgent = map['urgent'];
     important = map['important'];
+    compeleted = map['compeleted'];
   }
 
   int getCategoryInt(Category category) {
@@ -91,8 +95,13 @@ class TodoModel {
 
   @override
   String toString() {
-    print(
-        '$title $subTitle $endDate $urgent $important ${getCategoryInt(category)}');
+    print("""title $title 
+        Subtitle $subTitle 
+        EndDate $endDate 
+        Urgent $urgent 
+        Important $important 
+        Category ${getCategoryInt(category)} 
+        Compeleted $compeleted""");
     return super.toString();
   }
 }
