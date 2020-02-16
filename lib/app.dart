@@ -18,6 +18,7 @@ class App extends StatelessWidget {
     return TodoBlocProvider(
       bloc: TodoBloc(repository: this.repository),
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           // Define the default brightness and colors.
           brightness: Brightness.dark,
