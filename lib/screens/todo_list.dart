@@ -39,40 +39,97 @@ class _TodoListState extends State<TodoList> with DatePicker {
       initialData: <TodoModel>[],
       stream: todoBloc.getTodoListStream,
       builder: (BuildContext context, AsyncSnapshot<List<TodoModel>> snapshot) {
-        return ListView.builder(
-          itemCount: snapshot.data.length,
-          itemBuilder: (BuildContext context, int index) {
-            return Card(
-              child: Dismissible(
-                onDismissed: (direction) {
-                  if (DismissDirection.endToStart == direction) {
-                    // Left
-                    TodoModel todoModel = snapshot.data[index];
-                    todoBloc.deleteTodo(todoModel.id);
-                  } else {
-                    // Right
-                    TodoModel todoModel = snapshot.data[index]..compeleted = 1;
-                    todoBloc.updateTodo(todoModel);
-                  }
-                },
-                key: Key(uuid.v1()),
-                child: ListTile(
-                  title: Text(snapshot.data[index].title),
-                  subtitle: Text(
-                      "${snapshot.data[index].subTitle}  ${snapshot.data[index].endDate}"),
-                  leading: getIconAsPerCategory(snapshot.data[index].category),
+        return Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: ListView.builder(
+            itemCount: snapshot.data.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Card(
+                child: Dismissible(
+                  onDismissed: (direction) {
+                    if (DismissDirection.endToStart == direction) {
+                      // Left
+                      TodoModel todoModel = snapshot.data[index];
+                      todoBloc.deleteTodo(todoModel.id);
+                    } else {
+                      // Right
+                      TodoModel todoModel = snapshot.data[index]
+                        ..compeleted = 1;
+                      todoBloc.updateTodo(todoModel);
+                    }
+                  },
+                  key: Key(uuid.v1()),
+                  child: _todoListTile(snapshot, index),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         );
       },
     );
   }
 
+  Widget _todoListTile(AsyncSnapshot snapshot, int index) {
+    return Container(
+      decoration: BoxDecoration(
+          color: colorAsPerCondition(
+              snapshot.data[index].urgent, snapshot.data[index].important)),
+      child: shouldRightAlign(
+              snapshot.data[index].urgent, snapshot.data[index].important)
+          ? ListTile(
+              dense: true,
+              title: titleText("${snapshot.data[index].title}"),
+              subtitle: subTitle(
+                  "${snapshot.data[index].subTitle} \n${snapshot.data[index].endDate}"),
+              isThreeLine: true,
+              trailing: getIconAsPerCategory(snapshot.data[index].category),
+            )
+          : ListTile(
+              dense: true,
+              title: titleText("${snapshot.data[index].title}"),
+              subtitle: subTitle(
+                  "${snapshot.data[index].subTitle} \n${snapshot.data[index].endDate}"),
+              isThreeLine: true,
+              leading: getIconAsPerCategory(snapshot.data[index].category),
+            ),
+    );
+  }
+
+  Widget titleText(String title) {
+    return Text(title,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+        ));
+  }
+
+  Widget subTitle(String subTitle) {
+    return Text(
+      subTitle,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(color: Colors.black),
+    );
+  }
+
+  Widget endDate(String endDate) {
+    return Expanded(
+      flex: 1,
+      child: Text(
+        endDate,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(color: Colors.black),
+      ),
+    );
+  }
+
+  bool shouldRightAlign(int u, int i) => (u == 0 && i == 1) ? true : false;
+
   Widget _addTodoFab() {
     return FloatingActionButton(
-      child: const Icon(Icons.add),
+      child: const Icon(
+        Icons.add,
+      ),
       onPressed: () {
         Navigator.push(context,
             MaterialPageRoute(builder: (BuildContext context) {
@@ -85,16 +142,28 @@ class _TodoListState extends State<TodoList> with DatePicker {
   Widget getIconAsPerCategory(Category category) {
     switch (category) {
       case Category.work:
-        return Icon(Icons.work);
+        return Icon(
+          Icons.work,
+          color: Colors.black,
+        );
         break;
       case Category.social:
-        return Icon(Icons.people);
+        return Icon(
+          Icons.people,
+          color: Colors.black,
+        );
         break;
       case Category.personal:
-        return Icon(Icons.person);
+        return Icon(
+          Icons.person,
+          color: Colors.black,
+        );
         break;
       default:
-        return Icon(Icons.work);
+        return Icon(
+          Icons.work,
+          color: Colors.black,
+        );
         break;
     }
   }
@@ -132,5 +201,19 @@ class _TodoListState extends State<TodoList> with DatePicker {
             todoBloc: todoBloc,
           );
         });
+  }
+}
+
+Color colorAsPerCondition(var urgent, var important) {
+  bool u = urgent == 1 ? true : false;
+  bool i = important == 1 ? true : false;
+  if (u && !i) {
+    return Colors.yellow[600];
+  } else if (!u && !i) {
+    return Colors.white;
+  } else if (!u && i) {
+    return Colors.red[200];
+  } else {
+    return Colors.red[200];
   }
 }

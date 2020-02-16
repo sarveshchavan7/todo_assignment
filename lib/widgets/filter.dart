@@ -79,8 +79,10 @@ class _FilterWidgetState extends State<FilterWidget> with DatePicker {
       leading: IconButton(
         icon: Icon(Icons.clear),
         onPressed: () {
-          // Clear filter
-          todoBloc.applyFilter.add({});
+          if (filterMap.isNotEmpty) {
+            // Clear filter
+            todoBloc.applyFilter.add({});
+          }
           Navigator.pop(context);
         },
       ),

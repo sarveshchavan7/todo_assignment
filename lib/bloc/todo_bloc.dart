@@ -60,7 +60,7 @@ class TodoBloc {
     }
   }
 
-  viewTodo({Map filter}) async {
+  void viewTodo({Map filter}) async {
     List<TodoModel> todoList = await repository.view(filter: filter);
     _getTodoListController.sink.add(todoList);
   }

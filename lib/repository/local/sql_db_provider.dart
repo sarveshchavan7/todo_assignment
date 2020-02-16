@@ -97,7 +97,15 @@ class SqlDbProvider implements Repository<TodoModel> {
       sql += where;
     }
     // Order by urgent
-    sql += "ORDER BY urgent DESC";
+    sql += """ORDER BY ((CASE urgent
+                          WHEN 1 THEN 0
+                          WHEN 0 THEN 1
+                          END) || 
+                        (CASE important
+                          WHEN 1 THEN 0
+                          WHEN 0 THEN 1
+                          END)
+                          ) """;
     List<Map<String, dynamic>> todos = await _db.rawQuery(sql, args);
     return todos.map((map) {
       return TodoModel.fromDb(map);
