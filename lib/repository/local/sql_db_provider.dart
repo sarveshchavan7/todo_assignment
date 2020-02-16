@@ -4,6 +4,7 @@ import 'package:todo_assignment/repository/repository.dart';
 import 'dart:core';
 import 'package:path/path.dart';
 
+/// SQFlite implementation
 class SqlDbProvider implements Repository<TodoModel> {
   Database _db;
 

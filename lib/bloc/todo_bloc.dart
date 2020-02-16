@@ -6,9 +6,11 @@ import 'package:todo_assignment/repository/repository.dart';
 import 'package:meta/meta.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+/// TodoBloc all business logic for crud operations on todos
 class TodoBloc {
   final Repository repository;
 
+  // Controllers
   final _getTodoListController = BehaviorSubject<List<TodoModel>>();
   final _getCompletedTodoListController = BehaviorSubject<List<TodoModel>>();
   final _filterTodoController = BehaviorSubject<Map>.seeded({});

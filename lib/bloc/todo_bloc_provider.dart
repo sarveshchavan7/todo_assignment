@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:todo_assignment/bloc/todo_bloc.dart';
 export 'package:todo_assignment/bloc/todo_bloc.dart';
 
+/// provides Todobloc to the caller reason behind using statefull widget is to get access of dispose method to release resource 
+/// and inherited widget to get acccess in o(1) time 
 class TodoBlocProvider extends StatefulWidget {
   final Widget child;
   final TodoBloc bloc;

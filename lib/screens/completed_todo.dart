@@ -4,6 +4,7 @@ import 'package:todo_assignment/bloc/todo_bloc_provider.dart';
 import 'package:todo_assignment/models/todo_model.dart';
 import 'package:todo_assignment/utils/widget_content_decider.dart';
 
+/// List of completed todo
 class CompletedTodo extends StatefulWidget {
   final TodoBloc todoBloc;
 
@@ -46,7 +47,8 @@ class _CompletedTodoState extends State<CompletedTodo>
                               snapshot.data[index].important)
                           ? ListTile(
                               dense: true,
-                              title: _titleText("${snapshot.data[index].title}"),
+                              title:
+                                  _titleText("${snapshot.data[index].title}"),
                               subtitle: _subTitle(
                                   "${snapshot.data[index].subTitle} \n${snapshot.data[index].endDate}"),
                               isThreeLine: true,
@@ -55,7 +57,8 @@ class _CompletedTodoState extends State<CompletedTodo>
                             )
                           : ListTile(
                               dense: true,
-                              title: _titleText("${snapshot.data[index].title}"),
+                              title:
+                                  _titleText("${snapshot.data[index].title}"),
                               subtitle: _subTitle(
                                   "${snapshot.data[index].subTitle} \n${snapshot.data[index].endDate}"),
                               isThreeLine: true,

@@ -117,6 +117,7 @@ class _EditAddTodoState extends State<EditAddTodo> with DatePicker {
     );
   }
 
+  // Date widget
   Widget _date(BuildContext context) {
     _focusNode.unfocus();
     return Container(
@@ -154,7 +155,8 @@ class _EditAddTodoState extends State<EditAddTodo> with DatePicker {
       ),
     );
   }
-
+  
+  // Urgent and importanr checkboxes
   Widget _urgentImportant() {
     return Container(
       height: 60,
@@ -185,6 +187,7 @@ class _EditAddTodoState extends State<EditAddTodo> with DatePicker {
     );
   }
 
+  // Save todo
   Widget _saveFab() {
     return FloatingActionButton(
       child: const Icon(Icons.check),
@@ -204,6 +207,7 @@ class _EditAddTodoState extends State<EditAddTodo> with DatePicker {
     );
   }
 
+  // Check if all fields are filed
   bool areAllFieldEmpty() {
     // Validate input text fields,date and category
     bool areTextFiedlValid = _formKey.currentState.validate();

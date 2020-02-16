@@ -3,18 +3,17 @@ import 'package:todo_assignment/bloc/todo_bloc_provider.dart';
 import 'package:todo_assignment/models/todo_model.dart';
 import 'package:todo_assignment/routes_keys.dart';
 import 'package:todo_assignment/screens/edit_add_todo.dart';
-import 'package:todo_assignment/utils/date_picker.dart';
 import 'package:todo_assignment/utils/widget_content_decider.dart';
 import 'package:todo_assignment/widgets/filter.dart';
 import 'package:uuid/uuid.dart';
 
+/// List of todos
 class TodoList extends StatefulWidget {
   @override
   _TodoListState createState() => _TodoListState();
 }
 
-class _TodoListState extends State<TodoList>
-    with DatePicker, WidgetContentDecider {
+class _TodoListState extends State<TodoList> with WidgetContentDecider {
   TodoBloc _todoBloc;
   var _uuid = new Uuid();
 
@@ -112,6 +111,7 @@ class _TodoListState extends State<TodoList>
     );
   }
 
+  // Navigate to edit todo screen
   void _onTapTodoListTile(TodoModel todoModel) {
     Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
       return EditAddTodo(todoModel: todoModel);
@@ -135,6 +135,7 @@ class _TodoListState extends State<TodoList>
     );
   }
 
+  // Navigate to add todo screen
   Widget _addTodoFab() {
     return FloatingActionButton(
       child: const Icon(
@@ -170,6 +171,7 @@ class _TodoListState extends State<TodoList>
     );
   }
 
+  // Navigate to compeleted todos
   Widget _compeletedTodoList() {
     return IconButton(
       icon: Icon(
@@ -185,6 +187,7 @@ class _TodoListState extends State<TodoList>
     );
   }
 
+  // Show model bottom sheet for applying filter
   void _showFilterModalSheet() {
     showModalBottomSheet(
         context: context,

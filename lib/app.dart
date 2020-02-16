@@ -30,11 +30,7 @@ class App extends StatelessWidget {
           },
           RoutesKey.completedTodo: (context) {
             final todoBloc = TodoBlocProvider.of(context);
-            todoBloc.view(
-              filter: {
-                "is_complete": 1,
-              },
-            );
+            todoBloc.view(filter: {"is_complete": 1});
             return CompletedTodo(
               todoBloc: todoBloc,
             );

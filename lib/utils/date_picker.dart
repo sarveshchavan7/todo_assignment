@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
+/// Mixin for Filter, Add and Edit todo
 class DatePicker {
   Future<String> selectDate(BuildContext context, DateTime selectedDate) async {
     final DateTime picked = await showDatePicker(

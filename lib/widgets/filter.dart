@@ -57,6 +57,7 @@ class _FilterWidgetState extends State<FilterWidget> with DatePicker {
         });
   }
 
+  // Date
   Widget _datePicker(BuildContext context) {
     return ListTile(
       leading: Icon(Icons.date_range),
@@ -82,6 +83,7 @@ class _FilterWidgetState extends State<FilterWidget> with DatePicker {
     setState(() {});
   }
 
+  // Clear filter
   Widget _clearFilter() {
     return ListTile(
       leading: Icon(Icons.clear, color: Colors.red),
@@ -100,6 +102,7 @@ class _FilterWidgetState extends State<FilterWidget> with DatePicker {
     );
   }
 
+  // Apply filter
   Widget _saveFilter() {
     return ListTile(
       leading: Icon(Icons.done),
@@ -118,11 +121,13 @@ class _FilterWidgetState extends State<FilterWidget> with DatePicker {
 
   T cast<T>(x) => x is T ? x : null;
 
+  // Has user chaged the filter from previous state
   bool _isFilterChanged() {
     return (_filterMap["end_date"] != _todoBloc.getFilterValues["end_date"] ||
         _filterMap["category"] != _todoBloc.getFilterValues["category"]);
   }
 
+  // Back button to dismiss bottom sheet
   Widget _backButton() {
     return ListTile(
       leading: Icon(Icons.chevron_left),
