@@ -32,11 +32,11 @@ class _FilterWidgetState extends State<FilterWidget> with DatePicker {
         stream: todoBloc.filterStream,
         builder: (context, AsyncSnapshot<Map> snapshot) {
           return Container(
-            height: 350,
+            height: 380,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                _clearFilter(),
+                backButton(),
                 _datePicker(context),
                 SizedBox(
                   height: 15,
@@ -47,9 +47,10 @@ class _FilterWidgetState extends State<FilterWidget> with DatePicker {
                       .getCategoryEnum(cast<int>(filterMap["category"])),
                 ),
                 SizedBox(
-                  height: 25,
+                  height: 15,
                 ),
                 _saveFilter(),
+                _clearFilter(),
               ],
             ),
           );
@@ -83,7 +84,7 @@ class _FilterWidgetState extends State<FilterWidget> with DatePicker {
 
   Widget _clearFilter() {
     return ListTile(
-      leading: Icon(Icons.clear),
+      leading: Icon(Icons.clear, color: Colors.red),
       onTap: () {
         if (filterMap.isNotEmpty) {
           // Clear filter
@@ -93,6 +94,23 @@ class _FilterWidgetState extends State<FilterWidget> with DatePicker {
       },
       title: Text(
         'Clear Filter',
+        style: TextStyle(
+            fontSize: 17.0, fontWeight: FontWeight.bold, color: Colors.red),
+      ),
+    );
+  }
+
+  Widget _saveFilter() {
+    return ListTile(
+      leading: Icon(Icons.done),
+      onTap: isFilterChanged
+          ? () {
+              todoBloc.applyFilter.add(filterMap);
+              Navigator.pop(context);
+            }
+          : null,
+      title: Text(
+        'Apply Filter',
         style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold),
       ),
     );
@@ -100,21 +118,20 @@ class _FilterWidgetState extends State<FilterWidget> with DatePicker {
 
   T cast<T>(x) => x is T ? x : null;
 
-  Widget _saveFilter() {
-    return Center(
-      child: RaisedButton(
-          color: Colors.lightBlueAccent,
-          child: Text('Apply Filter'),
-          onPressed: isFilterChanged
-              ? () {
-                  todoBloc.applyFilter.add(filterMap);
-                  Navigator.pop(context);
-                }
-              : null),
-    );
-  }
-
   bool get isFilterChanged =>
       filterMap["end_date"] != todoBloc.getFilterValues["end_date"] ||
       filterMap["category"] != todoBloc.getFilterValues["category"];
+
+  Widget backButton() {
+    return ListTile(
+      leading: Icon(Icons.chevron_left),
+      title: Text(
+        'Back',
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 19.0),
+      ),
+      onTap: () {
+        Navigator.pop(context);
+      },
+    );
+  }
 }

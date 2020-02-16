@@ -84,6 +84,7 @@ class TodoModel {
 
   factory TodoModel.copyFrom(TodoModel todoModel) {
     return TodoModel(
+      id: todoModel.id,
       category: todoModel.category,
       title: todoModel.title,
       subTitle: todoModel.subTitle,

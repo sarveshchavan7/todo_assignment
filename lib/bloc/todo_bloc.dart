@@ -9,6 +9,7 @@ class TodoBloc {
   final Repository repository;
 
   final _getTodoListController = BehaviorSubject<List<TodoModel>>();
+  final _getCompletedTodoListController = BehaviorSubject<List<TodoModel>>();
   final _filterTodoController = BehaviorSubject<Map>.seeded({});
 
   // Input
@@ -17,6 +18,8 @@ class TodoBloc {
   // Output
   Stream get filterStream => _filterTodoController.stream;
   Stream get getTodoListStream => _getTodoListController.stream;
+  Stream get getCompletedTodoListStream =>
+      _getCompletedTodoListController.stream;
   Map get getFilterValues => _filterTodoController.value;
 
   // Cleanup
@@ -45,7 +48,7 @@ class TodoBloc {
   deleteTodo(int id) async {
     int resultCode = await repository.delete(id);
     if (resultCode == 1) {
-      //viewTodo();
+      viewTodo();
     } else {
       //TODO: toast message
     }
@@ -62,7 +65,11 @@ class TodoBloc {
 
   void viewTodo({Map filter}) async {
     List<TodoModel> todoList = await repository.view(filter: filter);
-    _getTodoListController.sink.add(todoList);
+    if (filter != null && filter.containsKey("is_complete")) {
+      _getCompletedTodoListController.sink.add(todoList);
+    } else {
+      _getTodoListController.sink.add(todoList);
+    }
   }
 
   void onFilterApplied(Map value) {
@@ -73,5 +80,6 @@ class TodoBloc {
     _subscriptions.forEach((subscription) => subscription.cancel());
     _getTodoListController.close();
     _filterTodoController.close();
+    _getCompletedTodoListController.close();
   }
 }

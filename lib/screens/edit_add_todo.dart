@@ -19,14 +19,21 @@ class EditAddTodo extends StatefulWidget {
 
 class _EditAddTodoState extends State<EditAddTodo> with DatePicker {
   static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
+  FocusNode focusNode;
   TodoModel _todoModel;
   TodoBloc todoBloc;
 
   @override
   void initState() {
+    focusNode = FocusNode();
     _todoModel = isEditAble ? widget.todoModel : TodoModel.add();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    focusNode.dispose();
   }
 
   @override
@@ -46,18 +53,24 @@ class _EditAddTodoState extends State<EditAddTodo> with DatePicker {
             key: _formKey,
             child: ListView(
               children: <Widget>[
-                CategoryChooser(callBackCategory: selectedCategory),
+                CategoryChooser(
+                  callBackCategory: selectedCategory,
+                  currentCategory: _todoModel.category,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
                 _title(),
                 SizedBox(
-                  height: 10,
+                  height: 15,
                 ),
                 _subTitle(),
                 SizedBox(
-                  height: 10,
+                  height: 25,
                 ),
                 _date(context),
                 SizedBox(
-                  height: 10,
+                  height: 15,
                 ),
                 _urgentImportant(),
               ],
@@ -72,75 +85,103 @@ class _EditAddTodoState extends State<EditAddTodo> with DatePicker {
   }
 
   Widget _title() {
-    return TextFormField(
-      key: SampleKeys.titleFiled,
-      validator: (val) => val.trim().isEmpty ? 'Please  titile' : null,
-      initialValue: isEditAble ? _todoModel.title : '',
-      decoration: InputDecoration(
-        hintText: 'Title',
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: TextFormField(
+        autofocus: true,
+        key: SampleKeys.titleFiled,
+        validator: (val) => val.trim().isEmpty ? 'Please  titile' : null,
+        initialValue: isEditAble ? _todoModel.title : '',
+        decoration: InputDecoration(
+          hintText: 'Title',
+        ),
+        onSaved: (titleText) => _todoModel.title = titleText,
       ),
-      onSaved: (titleText) => _todoModel.title = titleText,
     );
   }
 
   _subTitle() {
-    return TextFormField(
-      validator: (val) => val.trim().isEmpty ? 'Please sub titile' : null,
-      key: SampleKeys.subtitleFiled,
-      initialValue: isEditAble ? _todoModel.subTitle : '',
-      decoration: InputDecoration(
-        hintText: 'Sub title',
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: TextFormField(
+        autofocus: true,
+        focusNode: focusNode,
+        validator: (val) => val.trim().isEmpty ? 'Please sub titile' : null,
+        key: SampleKeys.subtitleFiled,
+        initialValue: isEditAble ? _todoModel.subTitle : '',
+        decoration: InputDecoration(
+          hintText: 'Sub title',
+        ),
+        onSaved: (subTitleText) => _todoModel.subTitle = subTitleText,
       ),
-      onSaved: (subTitleText) => _todoModel.subTitle = subTitleText,
     );
   }
 
   _date(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        IconButton(
-          icon: Icon(Icons.date_range),
-          onPressed: () async {
-            // Get date
-            String date = await selectDate(
-                context,
-                _todoModel.endDate == null
-                    ? DateTime.now()
-                    : stringToDateTime(_todoModel.endDate));
-            if (date != null) {
-              _todoModel.endDate = date;
-              setState(() {});
-            }
-          },
+    focusNode.unfocus();
+    return Container(
+      height: 60,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.indigo[400]),
+      ),
+      child: GestureDetector(
+        onTap: () async {
+          String date = await selectDate(
+              context,
+              _todoModel.endDate == null
+                  ? DateTime.now()
+                  : stringToDateTime(_todoModel.endDate));
+          if (date != null) {
+            _todoModel.endDate = date;
+            setState(() {});
+          }
+        },
+        child: Row(
+          children: <Widget>[
+            SizedBox(
+              width: 10,
+            ),
+            Icon(Icons.date_range),
+            SizedBox(
+              width: 30,
+            ),
+            Text(
+              _todoModel.endDate ?? 'Select Date',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            )
+          ],
         ),
-        Text(
-          _todoModel.endDate ?? 'Select Date',
-        )
-      ],
+      ),
     );
   }
 
   _urgentImportant() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: <Widget>[
-        Text('Urgent'),
-        Checkbox(
-          value: _todoModel.urgent == 1,
-          onChanged: (bool value) {
-            _todoModel.urgent = value ? 1 : 0;
-            setState(() {});
-          },
-        ),
-        Text('Important'),
-        Checkbox(
-          value: _todoModel.important == 1,
-          onChanged: (bool value) {
-            _todoModel.important = value ? 1 : 0;
-            setState(() {});
-          },
-        ),
-      ],
+    return Container(
+      height: 60,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.indigo[400]),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          Checkbox(
+            value: _todoModel.urgent == 1,
+            onChanged: (bool value) {
+              _todoModel.urgent = value ? 1 : 0;
+              setState(() {});
+            },
+          ),
+          Text('Urgent', style: TextStyle(fontWeight: FontWeight.bold)),
+          Checkbox(
+            value: _todoModel.important == 1,
+            onChanged: (bool value) {
+              _todoModel.important = value ? 1 : 0;
+              setState(() {});
+            },
+          ),
+          Text('Important', style: TextStyle(fontWeight: FontWeight.bold)),
+        ],
+      ),
     );
   }
 
@@ -151,7 +192,12 @@ class _EditAddTodoState extends State<EditAddTodo> with DatePicker {
         if (areAllFieldEmpty()) {
           _formKey.currentState.save();
           TodoModel todoModel = TodoModel.copyFrom(_todoModel);
-          todoBloc.addTodo(todoModel);
+          if (isEditAble) {
+            todoBloc.updateTodo(todoModel);
+          } else {
+            todoBloc.addTodo(todoModel);
+          }
+
           Navigator.pop(context);
         }
       },

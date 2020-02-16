@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:todo_assignment/bloc/todo_bloc_provider.dart';
 import 'package:todo_assignment/models/todo_model.dart';
+import 'package:todo_assignment/routes_keys.dart';
 import 'package:todo_assignment/screens/edit_add_todo.dart';
 import 'package:todo_assignment/utils/date_picker.dart';
+import 'package:todo_assignment/utils/widget_content_decider.dart';
 import 'package:todo_assignment/widgets/filter.dart';
 import 'package:uuid/uuid.dart';
 
@@ -11,7 +13,8 @@ class TodoList extends StatefulWidget {
   _TodoListState createState() => _TodoListState();
 }
 
-class _TodoListState extends State<TodoList> with DatePicker {
+class _TodoListState extends State<TodoList>
+    with DatePicker, WidgetContentDecider {
   TodoBloc todoBloc;
   var uuid = new Uuid();
 
@@ -39,6 +42,13 @@ class _TodoListState extends State<TodoList> with DatePicker {
       initialData: <TodoModel>[],
       stream: todoBloc.getTodoListStream,
       builder: (BuildContext context, AsyncSnapshot<List<TodoModel>> snapshot) {
+        if (snapshot.data.length == 0) {
+          return Center(
+            child: Text(
+              'No Todos Found',
+            ),
+          );
+        }
         return Padding(
           padding: const EdgeInsets.all(15.0),
           child: ListView.builder(
@@ -77,6 +87,9 @@ class _TodoListState extends State<TodoList> with DatePicker {
       child: shouldRightAlign(
               snapshot.data[index].urgent, snapshot.data[index].important)
           ? ListTile(
+              onTap: () {
+                onTapTodoListTile(snapshot.data[index]);
+              },
               dense: true,
               title: titleText("${snapshot.data[index].title}"),
               subtitle: subTitle(
@@ -85,6 +98,9 @@ class _TodoListState extends State<TodoList> with DatePicker {
               trailing: getIconAsPerCategory(snapshot.data[index].category),
             )
           : ListTile(
+              onTap: () {
+                onTapTodoListTile(snapshot.data[index]);
+              },
               dense: true,
               title: titleText("${snapshot.data[index].title}"),
               subtitle: subTitle(
@@ -93,6 +109,12 @@ class _TodoListState extends State<TodoList> with DatePicker {
               leading: getIconAsPerCategory(snapshot.data[index].category),
             ),
     );
+  }
+
+  void onTapTodoListTile(TodoModel todoModel) {
+    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+      return EditAddTodo(todoModel: todoModel);
+    }));
   }
 
   Widget titleText(String title) {
@@ -123,14 +145,10 @@ class _TodoListState extends State<TodoList> with DatePicker {
     );
   }
 
-  bool shouldRightAlign(int u, int i) => (u == 0 && i == 1) ? true : false;
-
   Widget _addTodoFab() {
     return FloatingActionButton(
-      backgroundColor: Colors.white,
       child: const Icon(
         Icons.add,
-        color: Colors.black,
       ),
       onPressed: () {
         Navigator.push(context,
@@ -139,31 +157,6 @@ class _TodoListState extends State<TodoList> with DatePicker {
         }));
       },
     );
-  }
-
-  Widget getIconAsPerCategory(Category category) {
-    switch (category) {
-      case Category.work:
-        return Image.asset(
-          "assets/icons/ic_work.png",
-        );
-        break;
-      case Category.social:
-        return Image.asset(
-          "assets/icons/ic_social.png",
-        );
-        break;
-      case Category.personal:
-        return Image.asset(
-          "assets/icons/ic_personal.png",
-        );
-        break;
-      default:
-        return Image.asset(
-          "assets/icons/ic_work.png",
-        );
-        break;
-    }
   }
 
   Widget _actions() {
@@ -179,15 +172,26 @@ class _TodoListState extends State<TodoList> with DatePicker {
 
   Widget _filterBottomSheet() {
     return IconButton(
-      icon: Icon(Icons.filter_list),
+      icon: Icon(
+        Icons.filter_list,
+        color: Colors.indigo[200],
+      ),
       onPressed: _showFilterModalSheet,
     );
   }
 
   Widget _compeletedTodoList() {
     return IconButton(
-      icon: Icon(Icons.done),
-      onPressed: () {},
+      icon: Icon(
+        Icons.done,
+        color: Colors.indigo[200],
+      ),
+      onPressed: () {
+        Navigator.pushNamed(
+          context,
+          RoutesKey.completedTodo,
+        );
+      },
     );
   }
 
@@ -199,19 +203,5 @@ class _TodoListState extends State<TodoList> with DatePicker {
             todoBloc: todoBloc,
           );
         });
-  }
-}
-
-Color colorAsPerCondition(var urgent, var important) {
-  bool u = urgent == 1 ? true : false;
-  bool i = important == 1 ? true : false;
-  if (u && !i) {
-    return Color(0xFFFEF6C5);
-  } else if (!u && !i) {
-    return Colors.white;
-  } else if (!u && i) {
-    return Color(0xFFECCFCF);
-  } else {
-    return Color(0xFFECCFCF);
   }
 }
