@@ -19,26 +19,26 @@ class EditAddTodo extends StatefulWidget {
 
 class _EditAddTodoState extends State<EditAddTodo> with DatePicker {
   static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  FocusNode focusNode;
+  FocusNode _focusNode;
   TodoModel _todoModel;
-  TodoBloc todoBloc;
+  TodoBloc _todoBloc;
 
   @override
   void initState() {
-    focusNode = FocusNode();
-    _todoModel = isEditAble ? widget.todoModel : TodoModel.add();
+    _focusNode = FocusNode();
+    _todoModel = isEditAble ? widget.todoModel : TodoModel.emptyModel();
     super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
-    focusNode.dispose();
+    _focusNode.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    todoBloc = TodoBlocProvider.of(context);
+    _todoBloc = TodoBlocProvider.of(context);
     return Scaffold(
       floatingActionButton: _saveFab(),
       appBar: AppBar(
@@ -81,7 +81,6 @@ class _EditAddTodoState extends State<EditAddTodo> with DatePicker {
 
   selectedCategory(Category category) {
     _todoModel.category = category;
-    print(category);
   }
 
   Widget _title() {
@@ -90,7 +89,7 @@ class _EditAddTodoState extends State<EditAddTodo> with DatePicker {
       child: TextFormField(
         autofocus: true,
         key: SampleKeys.titleFiled,
-        validator: (val) => val.trim().isEmpty ? 'Please  titile' : null,
+        validator: (val) => val.trim().isEmpty ? 'Please enter title' : null,
         initialValue: isEditAble ? _todoModel.title : '',
         decoration: InputDecoration(
           hintText: 'Title',
@@ -100,13 +99,14 @@ class _EditAddTodoState extends State<EditAddTodo> with DatePicker {
     );
   }
 
-  _subTitle() {
+  Widget _subTitle() {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: TextFormField(
         autofocus: true,
-        focusNode: focusNode,
-        validator: (val) => val.trim().isEmpty ? 'Please sub titile' : null,
+        focusNode: _focusNode,
+        validator: (val) =>
+            val.trim().isEmpty ? 'Please enter sub title' : null,
         key: SampleKeys.subtitleFiled,
         initialValue: isEditAble ? _todoModel.subTitle : '',
         decoration: InputDecoration(
@@ -117,8 +117,8 @@ class _EditAddTodoState extends State<EditAddTodo> with DatePicker {
     );
   }
 
-  _date(BuildContext context) {
-    focusNode.unfocus();
+  Widget _date(BuildContext context) {
+    _focusNode.unfocus();
     return Container(
       height: 60,
       decoration: BoxDecoration(
@@ -155,7 +155,7 @@ class _EditAddTodoState extends State<EditAddTodo> with DatePicker {
     );
   }
 
-  _urgentImportant() {
+  Widget _urgentImportant() {
     return Container(
       height: 60,
       decoration: BoxDecoration(
@@ -191,11 +191,11 @@ class _EditAddTodoState extends State<EditAddTodo> with DatePicker {
       onPressed: () {
         if (areAllFieldEmpty()) {
           _formKey.currentState.save();
-          TodoModel todoModel = TodoModel.copyFrom(_todoModel);
+          TodoModel todoModel = TodoModel.cloneFrom(_todoModel);
           if (isEditAble) {
-            todoBloc.updateTodo(todoModel);
+            _todoBloc.update(todoModel);
           } else {
-            todoBloc.addTodo(todoModel);
+            _todoBloc.add(todoModel);
           }
 
           Navigator.pop(context);

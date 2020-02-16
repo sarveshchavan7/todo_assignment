@@ -23,7 +23,7 @@ class TodoModel {
     this.compeleted,
   });
 
-  TodoModel.add();
+  TodoModel.emptyModel();
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -82,7 +82,7 @@ class TodoModel {
     }
   }
 
-  factory TodoModel.copyFrom(TodoModel todoModel) {
+  factory TodoModel.cloneFrom(TodoModel todoModel) {
     return TodoModel(
       id: todoModel.id,
       category: todoModel.category,

@@ -27,7 +27,7 @@ class WidgetContentDecider {
     }
   }
 
-  Color colorAsPerCondition(var urgent, var important) {
+  Color getcolorAsPerCondition(var urgent, var important) {
     bool u = urgent == 1 ? true : false;
     bool i = important == 1 ? true : false;
     if (u && !i) {

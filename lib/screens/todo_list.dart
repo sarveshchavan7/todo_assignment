@@ -15,17 +15,12 @@ class TodoList extends StatefulWidget {
 
 class _TodoListState extends State<TodoList>
     with DatePicker, WidgetContentDecider {
-  TodoBloc todoBloc;
-  var uuid = new Uuid();
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  TodoBloc _todoBloc;
+  var _uuid = new Uuid();
 
   @override
   Widget build(BuildContext context) {
-    todoBloc = TodoBlocProvider.of(context);
+    _todoBloc = TodoBlocProvider.of(context);
     return Scaffold(
       floatingActionButton: _addTodoFab(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -40,7 +35,7 @@ class _TodoListState extends State<TodoList>
   Widget _todoList() {
     return StreamBuilder<List<TodoModel>>(
       initialData: <TodoModel>[],
-      stream: todoBloc.getTodoListStream,
+      stream: _todoBloc.getTodoListStream,
       builder: (BuildContext context, AsyncSnapshot<List<TodoModel>> snapshot) {
         if (snapshot.data.length == 0) {
           return Center(
@@ -60,15 +55,21 @@ class _TodoListState extends State<TodoList>
                     if (DismissDirection.endToStart == direction) {
                       // Left
                       TodoModel todoModel = snapshot.data[index];
-                      todoBloc.deleteTodo(todoModel.id);
+                      _todoBloc.delete(todoModel.id);
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text('Todo deleted successfully.'),
+                      ));
                     } else {
                       // Right
                       TodoModel todoModel = snapshot.data[index]
                         ..compeleted = 1;
-                      todoBloc.updateTodo(todoModel);
+                      _todoBloc.update(todoModel);
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text('Todo completed.'),
+                      ));
                     }
                   },
-                  key: Key(uuid.v1()),
+                  key: Key(_uuid.v1()),
                   child: _todoListTile(snapshot, index),
                 ),
               );
@@ -82,28 +83,28 @@ class _TodoListState extends State<TodoList>
   Widget _todoListTile(AsyncSnapshot snapshot, int index) {
     return Container(
       decoration: BoxDecoration(
-          color: colorAsPerCondition(
+          color: getcolorAsPerCondition(
               snapshot.data[index].urgent, snapshot.data[index].important)),
       child: shouldRightAlign(
               snapshot.data[index].urgent, snapshot.data[index].important)
           ? ListTile(
               onTap: () {
-                onTapTodoListTile(snapshot.data[index]);
+                _onTapTodoListTile(snapshot.data[index]);
               },
               dense: true,
-              title: titleText("${snapshot.data[index].title}"),
-              subtitle: subTitle(
+              title: _titleText("${snapshot.data[index].title}"),
+              subtitle: _subTitle(
                   "${snapshot.data[index].subTitle} \n${snapshot.data[index].endDate}"),
               isThreeLine: true,
               trailing: getIconAsPerCategory(snapshot.data[index].category),
             )
           : ListTile(
               onTap: () {
-                onTapTodoListTile(snapshot.data[index]);
+                _onTapTodoListTile(snapshot.data[index]);
               },
               dense: true,
-              title: titleText("${snapshot.data[index].title}"),
-              subtitle: subTitle(
+              title: _titleText("${snapshot.data[index].title}"),
+              subtitle: _subTitle(
                   "${snapshot.data[index].subTitle} \n${snapshot.data[index].endDate}"),
               isThreeLine: true,
               leading: getIconAsPerCategory(snapshot.data[index].category),
@@ -111,13 +112,13 @@ class _TodoListState extends State<TodoList>
     );
   }
 
-  void onTapTodoListTile(TodoModel todoModel) {
+  void _onTapTodoListTile(TodoModel todoModel) {
     Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
       return EditAddTodo(todoModel: todoModel);
     }));
   }
 
-  Widget titleText(String title) {
+  Widget _titleText(String title) {
     return Text(
       title,
       overflow: TextOverflow.ellipsis,
@@ -126,22 +127,11 @@ class _TodoListState extends State<TodoList>
     );
   }
 
-  Widget subTitle(String subTitle) {
+  Widget _subTitle(String subTitle) {
     return Text(
       subTitle,
       overflow: TextOverflow.ellipsis,
       style: TextStyle(color: Colors.black),
-    );
-  }
-
-  Widget endDate(String endDate) {
-    return Expanded(
-      flex: 1,
-      child: Text(
-        endDate,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(color: Colors.black),
-      ),
     );
   }
 
@@ -200,7 +190,7 @@ class _TodoListState extends State<TodoList>
         context: context,
         builder: (builder) {
           return FilterWidget(
-            todoBloc: todoBloc,
+            todoBloc: _todoBloc,
           );
         });
   }

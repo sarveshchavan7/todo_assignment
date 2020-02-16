@@ -4,6 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:todo_assignment/models/todo_model.dart';
 import 'package:todo_assignment/repository/repository.dart';
 import 'package:meta/meta.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class TodoBloc {
   final Repository repository;
@@ -26,54 +27,64 @@ class TodoBloc {
   List<StreamSubscription<dynamic>> _subscriptions;
 
   TodoBloc({@required this.repository}) {
-    viewTodo();
+    view();
     _subscriptions = [
       _filterTodoController.listen(onFilterApplied),
     ];
   }
 
-  addTodo(TodoModel todoModel) async {
+  add(TodoModel todoModel) async {
     try {
       int resultCode = await repository.add(todoModel);
       if (resultCode != -1) {
-        viewTodo(filter: getFilterValues);
+        view(filter: getFilterValues);
       } else {
-        //TODO: toast message
+        Fluttertoast.showToast(msg: "Failed to add todo");
       }
     } catch (e) {
-      print(e);
+      Fluttertoast.showToast(msg: "Something went wrong");
     }
   }
 
-  deleteTodo(int id) async {
-    int resultCode = await repository.delete(id);
-    if (resultCode == 1) {
-      viewTodo();
-    } else {
-      //TODO: toast message
+  delete(int id) async {
+    try {
+      int resultCode = await repository.delete(id);
+      if (resultCode == 1) {
+        view();
+      } else {
+        Fluttertoast.showToast(msg: "Failed to delete todo");
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Something went wrong");
     }
   }
 
-  updateTodo(TodoModel todoModel) async {
-    int resultCode = await repository.update(todoModel);
-    if (resultCode == 1) {
-      viewTodo(filter: getFilterValues);
-    } else {
-      //TODO: toast message
+  update(TodoModel todoModel) async {
+    try {
+      int resultCode = await repository.update(todoModel);
+      if (resultCode == 1) {
+        view(filter: getFilterValues);
+      } else {
+        Fluttertoast.showToast(msg: "Failed to update todo");
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Something went wrong");
     }
   }
 
-  void viewTodo({Map filter}) async {
-    List<TodoModel> todoList = await repository.view(filter: filter);
-    if (filter != null && filter.containsKey("is_complete")) {
-      _getCompletedTodoListController.sink.add(todoList);
-    } else {
-      _getTodoListController.sink.add(todoList);
+  view({Map filter}) async {
+    try {
+      List<TodoModel> todoList = await repository.view(filter: filter);
+      (filter != null && filter.containsKey("is_complete"))
+          ? _getCompletedTodoListController.sink.add(todoList)
+          : _getTodoListController.sink.add(todoList);
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Something went wrong");
     }
   }
 
   void onFilterApplied(Map value) {
-    viewTodo(filter: value);
+    view(filter: value);
   }
 
   close() {

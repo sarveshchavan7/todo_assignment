@@ -14,37 +14,37 @@ class FilterWidget extends StatefulWidget {
 }
 
 class _FilterWidgetState extends State<FilterWidget> with DatePicker {
-  String date;
-  Map filterMap = {};
-  TodoBloc todoBloc;
+  String _date;
+  Map _filterMap = {};
+  TodoBloc _todoBloc;
 
   @override
   void initState() {
     super.initState();
-    todoBloc = widget.todoBloc;
-    filterMap.addAll(todoBloc.getFilterValues);
+    _todoBloc = widget.todoBloc;
+    _filterMap.addAll(_todoBloc.getFilterValues);
   }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<Map>(
         initialData: {},
-        stream: todoBloc.filterStream,
+        stream: _todoBloc.filterStream,
         builder: (context, AsyncSnapshot<Map> snapshot) {
           return Container(
             height: 380,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                backButton(),
+                _backButton(),
                 _datePicker(context),
                 SizedBox(
                   height: 15,
                 ),
                 CategoryChooser(
-                  callBackCategory: onCategorySelected,
-                  currentCategory: TodoModel.add()
-                      .getCategoryEnum(cast<int>(filterMap["category"])),
+                  callBackCategory: _onCategorySelected,
+                  currentCategory: TodoModel.emptyModel()
+                      .getCategoryEnum(cast<int>(_filterMap["category"])),
                 ),
                 SizedBox(
                   height: 15,
@@ -61,24 +61,24 @@ class _FilterWidgetState extends State<FilterWidget> with DatePicker {
     return ListTile(
       leading: Icon(Icons.date_range),
       onTap: () async {
-        date = await selectDate(
+        _date = await selectDate(
           context,
-          date != null ? stringToDateTime(date) : DateTime.now(),
+          _date != null ? stringToDateTime(_date) : DateTime.now(),
         );
-        if (date != null) {
-          filterMap["end_date"] = date;
+        if (_date != null) {
+          _filterMap["end_date"] = _date;
           setState(() {});
         }
       },
       title: Text(
-        "${filterMap['end_date'] ?? 'Select Date'}",
+        "${_filterMap['end_date'] ?? 'Select Date'}",
         style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold),
       ),
     );
   }
 
-  onCategorySelected(Category category) {
-    filterMap["category"] = TodoModel.add().getCategoryInt(category);
+  _onCategorySelected(Category category) {
+    _filterMap["category"] = TodoModel.emptyModel().getCategoryInt(category);
     setState(() {});
   }
 
@@ -86,9 +86,9 @@ class _FilterWidgetState extends State<FilterWidget> with DatePicker {
     return ListTile(
       leading: Icon(Icons.clear, color: Colors.red),
       onTap: () {
-        if (filterMap.isNotEmpty) {
+        if (_filterMap.isNotEmpty) {
           // Clear filter
-          todoBloc.applyFilter.add({});
+          _todoBloc.applyFilter.add({});
         }
         Navigator.pop(context);
       },
@@ -103,9 +103,9 @@ class _FilterWidgetState extends State<FilterWidget> with DatePicker {
   Widget _saveFilter() {
     return ListTile(
       leading: Icon(Icons.done),
-      onTap: isFilterChanged
+      onTap: _isFilterChanged()
           ? () {
-              todoBloc.applyFilter.add(filterMap);
+              _todoBloc.applyFilter.add(_filterMap);
               Navigator.pop(context);
             }
           : null,
@@ -118,11 +118,12 @@ class _FilterWidgetState extends State<FilterWidget> with DatePicker {
 
   T cast<T>(x) => x is T ? x : null;
 
-  bool get isFilterChanged =>
-      filterMap["end_date"] != todoBloc.getFilterValues["end_date"] ||
-      filterMap["category"] != todoBloc.getFilterValues["category"];
+  bool _isFilterChanged() {
+    return (_filterMap["end_date"] != _todoBloc.getFilterValues["end_date"] ||
+        _filterMap["category"] != _todoBloc.getFilterValues["category"]);
+  }
 
-  Widget backButton() {
+  Widget _backButton() {
     return ListTile(
       leading: Icon(Icons.chevron_left),
       title: Text(

@@ -39,15 +39,15 @@ class _CompletedTodoState extends State<CompletedTodo>
                   return Card(
                     child: Container(
                       decoration: BoxDecoration(
-                          color: colorAsPerCondition(
+                          color: getcolorAsPerCondition(
                               snapshot.data[index].urgent,
                               snapshot.data[index].important)),
                       child: shouldRightAlign(snapshot.data[index].urgent,
                               snapshot.data[index].important)
                           ? ListTile(
                               dense: true,
-                              title: titleText("${snapshot.data[index].title}"),
-                              subtitle: subTitle(
+                              title: _titleText("${snapshot.data[index].title}"),
+                              subtitle: _subTitle(
                                   "${snapshot.data[index].subTitle} \n${snapshot.data[index].endDate}"),
                               isThreeLine: true,
                               trailing: getIconAsPerCategory(
@@ -55,8 +55,8 @@ class _CompletedTodoState extends State<CompletedTodo>
                             )
                           : ListTile(
                               dense: true,
-                              title: titleText("${snapshot.data[index].title}"),
-                              subtitle: subTitle(
+                              title: _titleText("${snapshot.data[index].title}"),
+                              subtitle: _subTitle(
                                   "${snapshot.data[index].subTitle} \n${snapshot.data[index].endDate}"),
                               isThreeLine: true,
                               leading: getIconAsPerCategory(
@@ -69,7 +69,7 @@ class _CompletedTodoState extends State<CompletedTodo>
         });
   }
 
-  Widget titleText(String title) {
+  Widget _titleText(String title) {
     return Text(
       title,
       overflow: TextOverflow.ellipsis,
@@ -78,7 +78,7 @@ class _CompletedTodoState extends State<CompletedTodo>
     );
   }
 
-  Widget subTitle(String subTitle) {
+  Widget _subTitle(String subTitle) {
     return Text(
       subTitle,
       overflow: TextOverflow.ellipsis,

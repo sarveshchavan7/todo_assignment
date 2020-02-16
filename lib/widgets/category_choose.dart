@@ -18,11 +18,11 @@ class CategoryChooser extends StatefulWidget {
 class _CategoryChooserState extends State<CategoryChooser> {
   Category category;
 
-  bool get isCategorySelected => widget.currentCategory != null;
+  bool get hasCategory => widget.currentCategory != null;
 
   @override
   void initState() {
-    category = isCategorySelected ? widget.currentCategory : null;
+    category = hasCategory ? widget.currentCategory : null;
     super.initState();
   }
 
@@ -33,7 +33,7 @@ class _CategoryChooserState extends State<CategoryChooser> {
       children: <Widget>[
         Text(
           'Select Category',
-          style: TextStyle(fontSize: 17.0,fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold),
         ),
         SizedBox(
           height: 20,
@@ -53,7 +53,7 @@ class _CategoryChooserState extends State<CategoryChooser> {
                   width: 50,
                   child: Image.asset(
                     "assets/icons/ic_work.png",
-                    color: selectedColor(Category.work),
+                    color: fadeSelectedColor(Category.work),
                     colorBlendMode: BlendMode.saturation,
                   ),
                 )),
@@ -69,7 +69,7 @@ class _CategoryChooserState extends State<CategoryChooser> {
                   width: 50,
                   child: Image.asset(
                     "assets/icons/ic_social.png",
-                    color: selectedColor(Category.social),
+                    color: fadeSelectedColor(Category.social),
                     colorBlendMode: BlendMode.saturation,
                   ),
                 )),
@@ -85,7 +85,7 @@ class _CategoryChooserState extends State<CategoryChooser> {
                   width: 50,
                   child: Image.asset(
                     "assets/icons/ic_personal.png",
-                    color: selectedColor(Category.personal),
+                    color: fadeSelectedColor(Category.personal),
                     colorBlendMode: BlendMode.saturation,
                   ),
                 )),
@@ -95,7 +95,7 @@ class _CategoryChooserState extends State<CategoryChooser> {
     );
   }
 
-  Color selectedColor(Category category) {
+  Color fadeSelectedColor(Category category) {
     return category == this.category ? Colors.grey : Colors.transparent;
   }
 }
