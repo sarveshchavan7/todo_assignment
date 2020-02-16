@@ -32,16 +32,22 @@ class _FilterWidgetState extends State<FilterWidget> with DatePicker {
         stream: todoBloc.filterStream,
         builder: (context, AsyncSnapshot<Map> snapshot) {
           return Container(
-            height: 250,
+            height: 350,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 _clearFilter(),
                 _datePicker(context),
+                SizedBox(
+                  height: 15,
+                ),
                 CategoryChooser(
                   callBackCategory: onCategorySelected,
                   currentCategory: TodoModel.add()
                       .getCategoryEnum(cast<int>(filterMap["category"])),
+                ),
+                SizedBox(
+                  height: 25,
                 ),
                 _saveFilter(),
               ],
@@ -52,20 +58,21 @@ class _FilterWidgetState extends State<FilterWidget> with DatePicker {
 
   Widget _datePicker(BuildContext context) {
     return ListTile(
-      leading: IconButton(
-        icon: Icon(Icons.date_range),
-        onPressed: () async {
-          date = await selectDate(
-            context,
-            date != null ? stringToDateTime(date) : DateTime.now(),
-          );
-          if (date != null) {
-            filterMap["end_date"] = date;
-            setState(() {});
-          }
-        },
+      leading: Icon(Icons.date_range),
+      onTap: () async {
+        date = await selectDate(
+          context,
+          date != null ? stringToDateTime(date) : DateTime.now(),
+        );
+        if (date != null) {
+          filterMap["end_date"] = date;
+          setState(() {});
+        }
+      },
+      title: Text(
+        "${filterMap['end_date'] ?? 'Select Date'}",
+        style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold),
       ),
-      title: Text("${filterMap['end_date'] ?? 'Select Date'}"),
     );
   }
 
@@ -76,17 +83,18 @@ class _FilterWidgetState extends State<FilterWidget> with DatePicker {
 
   Widget _clearFilter() {
     return ListTile(
-      leading: IconButton(
-        icon: Icon(Icons.clear),
-        onPressed: () {
-          if (filterMap.isNotEmpty) {
-            // Clear filter
-            todoBloc.applyFilter.add({});
-          }
-          Navigator.pop(context);
-        },
+      leading: Icon(Icons.clear),
+      onTap: () {
+        if (filterMap.isNotEmpty) {
+          // Clear filter
+          todoBloc.applyFilter.add({});
+        }
+        Navigator.pop(context);
+      },
+      title: Text(
+        'Clear Filter',
+        style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold),
       ),
-      title: Text('Clear'),
     );
   }
 

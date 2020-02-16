@@ -96,12 +96,12 @@ class _TodoListState extends State<TodoList> with DatePicker {
   }
 
   Widget titleText(String title) {
-    return Text(title,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-          color: Colors.black,
-          fontWeight: FontWeight.bold,
-        ));
+    return Text(
+      title,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(
+          color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15.0),
+    );
   }
 
   Widget subTitle(String subTitle) {
@@ -127,8 +127,10 @@ class _TodoListState extends State<TodoList> with DatePicker {
 
   Widget _addTodoFab() {
     return FloatingActionButton(
+      backgroundColor: Colors.white,
       child: const Icon(
         Icons.add,
+        color: Colors.black,
       ),
       onPressed: () {
         Navigator.push(context,
@@ -142,27 +144,23 @@ class _TodoListState extends State<TodoList> with DatePicker {
   Widget getIconAsPerCategory(Category category) {
     switch (category) {
       case Category.work:
-        return Icon(
-          Icons.work,
-          color: Colors.black,
+        return Image.asset(
+          "assets/icons/ic_work.png",
         );
         break;
       case Category.social:
-        return Icon(
-          Icons.people,
-          color: Colors.black,
+        return Image.asset(
+          "assets/icons/ic_social.png",
         );
         break;
       case Category.personal:
-        return Icon(
-          Icons.person,
-          color: Colors.black,
+        return Image.asset(
+          "assets/icons/ic_personal.png",
         );
         break;
       default:
-        return Icon(
-          Icons.work,
-          color: Colors.black,
+        return Image.asset(
+          "assets/icons/ic_work.png",
         );
         break;
     }
@@ -208,12 +206,12 @@ Color colorAsPerCondition(var urgent, var important) {
   bool u = urgent == 1 ? true : false;
   bool i = important == 1 ? true : false;
   if (u && !i) {
-    return Colors.yellow[600];
+    return Color(0xFFFEF6C5);
   } else if (!u && !i) {
     return Colors.white;
   } else if (!u && i) {
-    return Colors.red[200];
+    return Color(0xFFECCFCF);
   } else {
-    return Colors.red[200];
+    return Color(0xFFECCFCF);
   }
 }
